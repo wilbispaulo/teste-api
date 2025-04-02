@@ -1,0 +1,5 @@
+.env
+*.cer
+composer.lock
+vendor
+teste
