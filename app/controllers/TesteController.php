@@ -35,13 +35,4 @@ class TesteController
             ->withHeader('Content-Type', 'application/json')
             ->withStatus(200);
     }
-
-    public static function out200(ResponseInterface $response, array $data): ResponseInterface
-    {
-        var_dump($response);
-        $response->getBody()->write(json_encode($data));
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(200);
-    }
 }
