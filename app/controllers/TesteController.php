@@ -22,7 +22,7 @@ class TesteController
 
     public function teste(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        if (!preg_match('/[0-9]+/', $args['id'])) {
+        if (!preg_match('/^[0-9]+$/', $args['id'])) {
             return throw new HttpBadRequestException($request);
         }
         $data = [
