@@ -1,5 +1,6 @@
 .env
 *.cer
+*.p12
 composer.lock
 vendor
 teste
