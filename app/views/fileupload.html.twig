@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload File Page</title>
+    <base href="http://localhost/">
+</head>
+<body>
+    <h1>UPLOAD FILE</h1>
+    <hr>
+    <form id="formfile">
+        <p>
+            <label>Add files (multiple): </label><br/>
+            <input type="file" id="file" name="jsonfile[]" accept=".json" multiple="multiple"/>
+        </p>
+    </form>
+    <button id="enviar" name="send">Enviar</button>
+    <script src="app/assets/js/fileupload.js" type="module"></script>
+</body>
+</html>

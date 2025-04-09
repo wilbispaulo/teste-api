@@ -16,6 +16,7 @@
         "slim/psr7": "^1.7",
         "vlucas/phpdotenv": "^5.6",
         "wilbispaulo/authcli-jwt": "^1.0",
-        "wilbispaulo/bingo-cart": "^1.0"
+        "wilbispaulo/bingo-cart": "^1.0",
+        "slim/twig-view": "^3.4"
     }
 }
