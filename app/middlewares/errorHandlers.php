@@ -34,3 +34,11 @@ $badRequestErrorHandler = function (ServerRequestInterface $request, Throwable $
         ->withStatus(400)
         ->withHeader('Content-Type', 'application/json');
 };
+
+$invalidSignErrorHandler = function (ServerRequestInterface $request, Throwable $exception, bool $displayErrorDetails) {
+    $response = new Response();
+    $response->getBody()->write(json_encode(['error' => '400_invalid_sign']));
+    return $response
+        ->withStatus(400)
+        ->withHeader('Content-Type', 'application/json');
+};

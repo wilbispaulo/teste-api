@@ -26,6 +26,7 @@ class BingoController
 
         $serieCarts = $bingo->makeSeries($seriesParams['qty_cart']);
         $json = json_encode($serieCarts, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
         $seriesSign = BingoCart::signJson($json, $sslHash->getPrivatePEM());
 
         $response->getBody()->write(
