@@ -16,7 +16,7 @@ $app->post('/api/bingo/create', [BingoController::class, 'create'])
     ->add(new JsonBingoCartValidatorMiddleware)
     ->add(new JsonBodyParserMiddleware());
 $app->post('/api/bingo/upload/json', [UploadController::class, 'uploadJson'])
-    ->add(JsonFileSignatureValidatorMiddleware::class);;
+    ->add(new JsonFileSignatureValidatorMiddleware());
 
 // APP
 $app->get('/app/bingo/upload', [AppController::class, 'bingoUpload']);
