@@ -13,7 +13,7 @@ use App\middlewares\JsonFileSignatureValidatorMiddleware;
 $app->get('/api/pix/txt', [TesteController::class, 'index'])->add(new OAuthMiddleware());
 $app->get('/api/teste/one/{id}', [TesteController::class, 'teste']);
 $app->post('/api/bingo/create', [BingoController::class, 'create'])
-    ->add(new JsonBingoCartValidatorMiddleware)
+    ->add(new JsonBingoCartValidatorMiddleware())
     ->add(new JsonBodyParserMiddleware());
 $app->post('/api/bingo/upload/json', [UploadController::class, 'uploadJson'])
     ->add(new JsonFileSignatureValidatorMiddleware());
