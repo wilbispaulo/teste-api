@@ -11,8 +11,12 @@
     <hr>
     <form id="formfile">
         <p>
-            <label>Add files (multiple): </label><br/>
-            <input type="file" id="file" name="jsonfile[]" accept=".json" multiple="multiple"/>
+            <label>Add file JSON: </label><br/>
+            <input type="file" id="file_json" name="jsonfile[]" accept=".json" multiple="multiple"/>
+        </p>
+        <p>
+            <label>Add file background image JPEG : </label><br/>
+            <input type="file" id="file_jpeg" name="jpegfile" accept=".jpg"/>
         </p>
     </form>
     <button id="enviar" name="send">Enviar</button>

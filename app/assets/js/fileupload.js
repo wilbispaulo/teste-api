@@ -1,19 +1,41 @@
 const form = document.getElementById('form');
-const fileInput = document.getElementById('file');
+const fileInputJson = document.getElementById('file_json');
+const fileInputJpeg = document.getElementById('file_jpeg');
 const butEnviar = document.getElementById('enviar');
 
 butEnviar.addEventListener('click', function (e) {
     e.preventDefault();
-    const formData = new FormData();
-    const selectedFiles = [...fileInput.files];
+    const formDataJson = new FormData();
+    var selectedFiles = [...fileInputJson.files];
     selectedFiles.forEach((file) => {
-        formData.append('jsonFile[]', file);
+        formDataJson.append('jsonFile[]', file);
     });
-    sendForm(formData);
+    sendJson(formDataJson);
+
+    const formDataJpeg = new FormData();
+    selectedFiles = [...fileInputJpeg.files];
+    selectedFiles.forEach((file) => {
+        formDataJpeg.append('jpegFile[]', file);
+    });
+    sendJpeg(formDataJpeg);
 });
 
-async function sendForm(formData) {
+async function sendJson(formData) {
     return await fetch('http://localhost/api/bingo/upload/json', {
+        method: 'POST',
+        body: formData,
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            return data;
+        })
+        .catch((e) => {
+            alert('Não foi possível o envio:\nErro: ' + e);
+        });
+}
+
+async function sendJpeg(formData) {
+    return await fetch('http://localhost/api/bingo/upload/background', {
         method: 'POST',
         body: formData,
     })

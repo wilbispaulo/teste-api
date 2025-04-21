@@ -2,6 +2,7 @@
 
 namespace App\middlewares;
 
+use App\library\Helpers;
 use App\library\HttpInvalidSignException;
 use BingoCart\BingoCart;
 use Psr\Http\Message\ResponseInterface;
@@ -23,7 +24,7 @@ class JsonFileSignatureValidatorMiddleware implements MiddlewareInterface
                     $file['json'][$uploadedFile->getClientFilename()] = 'invalid_sign';
                     continue;
                 }
-                $filename = self::moveUploadedFile(dirname(__FILE__, 3) . $_ENV['PATH_TO_UPLOAD'], $uploadedFile);
+                $filename = Helpers::moveUploadedFile(dirname(__FILE__, 3) . $_ENV['PATH_TO_UPLOAD'], $uploadedFile);
                 $file['json'][$filename] = 'ok';
             }
         }
@@ -36,15 +37,5 @@ class JsonFileSignatureValidatorMiddleware implements MiddlewareInterface
         $json = $uploadedFile->getStream()->getContents();
         $cert = dirname(__FILE__, 3) . $_ENV['PATH_TO_CERT'];
         return BingoCart::validateSignJson($json, $cert);
-    }
-
-    private static function moveUploadedFile(string $directory, UploadedFileInterface $uploadedFile)
-    {
-        $json = $uploadedFile->getStream()->getContents();
-        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-        $basename = bin2hex(random_bytes(8));
-        $filename = sprintf('%s.%0.8s', $basename, $extension);
-        $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-        return $filename;
     }
 }

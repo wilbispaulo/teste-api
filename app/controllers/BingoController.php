@@ -3,7 +3,6 @@
 namespace App\controllers;
 
 use BingoCart\BingoCart;
-use BingoCart\library\HashSSl;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -13,9 +12,10 @@ class BingoController
     {
         $seriesParams = $request->getParsedBody();
 
-        $sslHash = new HashSSl(dirname(__FILE__, 3) . $_ENV['PATH_TO_BINGO_CERT'], $_ENV['BINGO_CERT_SECRET']);
+        // $sslHash = new HashSSl(dirname(__FILE__, 3) . $_ENV['PATH_TO_BINGO_CERT'], $_ENV['BINGO_CERT_SECRET']);
         $bingo = new BingoCart(
-            $sslHash,
+            dirname(__FILE__, 3) . $_ENV['PATH_TO_BINGO_CERT'],
+            $_ENV['BINGO_CERT_SECRET'],
             $seriesParams['date'],
             $seriesParams['serie'],
             $seriesParams['owner'],
@@ -27,7 +27,7 @@ class BingoController
         $serieCarts = $bingo->makeSeries($seriesParams['qty_cart']);
         $json = json_encode($serieCarts, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
-        $seriesSign = BingoCart::signJson($json, $sslHash->getPrivatePEM());
+        $seriesSign = $bingo->signJson($json);
 
         $response->getBody()->write(
             $seriesSign
