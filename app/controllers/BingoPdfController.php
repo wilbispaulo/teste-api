@@ -14,24 +14,21 @@ class BingoPdfController
         $args = $request->getParsedBody();
 
         if (!key_exists('error', $args)) {
-            // PDF CREATE
 
+            // PDF CREATE
             $bgFile = dirname(__FILE__, 3) . $_ENV['PATH_TO_UPLOAD'] . DIRECTORY_SEPARATOR . $args['serie'] . '.jpg';
             $jsonFile = dirname(__FILE__, 3) . $_ENV['PATH_TO_UPLOAD'] . DIRECTORY_SEPARATOR . $args['serie'] . '.json';
-
-
             $jsonData = json_decode(file_get_contents($jsonFile), true);
-            // var_dump($jsonData->head->date);
-            // die();
 
             $pdf = new BingoPdf;
+
+            $pdf->setProtection(['copy', 'modify', 'extract', 'assemble'], $_ENV['PDF_PASS'], $_ENV['PDF_OWNER_PASS'], 0, null);
 
             $pdf->setFilePDF($args['serie'] . '.pdf');
 
             $page = 0;
 
             foreach ($jsonData['carts'] as $cart) {
-
                 $cartNum = intval(substr($cart, 0, 3));
                 if ($cartNum % 2 === 0) {
                     $offSetX = 85;
@@ -43,9 +40,14 @@ class BingoPdfController
                     // BACKGROUND IMAGE
                     $pdf->imageJpgPdf($bgFile, 0, 0, 210, 148.5);
 
-                    // DATE
+                    $pdf->StartTransform();
+                    $pdf->Rotate(90, 9, 135);
+                    $pdf->textBoxPdf($jsonData['head']['owner'], 9, 135, 90, 5, ['style' => 'BI', 'size' => 10]);
+                    $pdf->StopTransform();
+
+
                     $pdf->textBoxPdf($jsonData['head']['date'], 74, 7.5, 30, 5, []);
-                    $pdf->textBoxPdf($jsonData['head']['title_serie'], 74, 12, 95, 6, ['style' => 'B', 'size' => 18]);
+                    $pdf->textBoxPdf($jsonData['head']['title_serie'], 74, 12, 95, 6, ['style' => 'B', 'size' => 16]);
                     $pdf->textBoxPdf($jsonData['head']['jackpot'], 74, 19.4, 95, 11, []);
 
                     $bigCartNum = $args['serie'] . sprintf('%03d', $page);
@@ -91,9 +93,7 @@ class BingoPdfController
                 ->withStatus(200);
         }
 
-
         $contents = $args;
-
         $response->getBody()->write(
             json_encode($contents, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
         );
