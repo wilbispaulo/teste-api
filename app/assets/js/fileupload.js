@@ -46,14 +46,10 @@ butGerar.addEventListener('click', async function (e) {
         alert("Input field SERIE don't be empty!");
         return;
     }
-    if (inputFrom.value === '') {
-        // alert("Input field FROM don't be empty!");
-        // return;
+    if (inputFrom.value === '' || parseInt(inputFrom.value) < 0) {
         inputFrom.value = 0;
     }
-    if (inputTo.value === '') {
-        // alert("Input field TO don't be empty!");
-        // return;
+    if (inputTo.value === '' || parseInt(inputTo.value) < 0) {
         inputTo.value = 0;
     }
     if (typeof parseInt(inputFrom.value) !== 'number') {

@@ -27,11 +27,10 @@ class BingoPdfController
             $pdf->setFilePDF($args['serie'] . '.pdf');
 
             $page = 0;
-            // $jsonData['carts'] as $cart
-            if ($args['from'] === '0') {
+            if ($args['from'] <= '0') {
                 $args['from'] = 1;
             }
-            if ($args['to'] === '0') {
+            if ($args['to'] <= '0' or $args['to'] > count($jsonData['carts'])) {
                 $args['to'] = count($jsonData['carts']);
             }
             for ($n = (int)$args['from'] - 1; $n < (int)$args['to']; $n++) {
