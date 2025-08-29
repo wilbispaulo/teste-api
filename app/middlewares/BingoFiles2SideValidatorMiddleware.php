@@ -8,7 +8,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Routing\RouteContext;
 
-class BingoFilesValidatorMiddleware implements MiddlewareInterface
+class BingoFiles2SideValidatorMiddleware implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -21,10 +21,17 @@ class BingoFilesValidatorMiddleware implements MiddlewareInterface
             ]));
         };
 
-        if (!file_exists(dirname(__FILE__, 3) . $_ENV['PATH_TO_UPLOAD'] . '/' . $args['serie'] . '.jpg')) {
+        if (!file_exists(dirname(__FILE__, 3) . $_ENV['PATH_TO_UPLOAD'] . '/' . $args['serie'] . 'fr.jpg')) {
             return $handler->handle($request->withParsedBody([
                 'error' => 'image_file_missing',
-                'msg' => 'Image file is missing.'
+                'msg' => 'Front image file is missing (AAMMDD##fr.jpg).'
+            ]));
+        };
+
+        if (!file_exists(dirname(__FILE__, 3) . $_ENV['PATH_TO_UPLOAD'] . '/' . $args['serie'] . 'bk.jpg')) {
+            return $handler->handle($request->withParsedBody([
+                'error' => 'image_file_missing',
+                'msg' => 'Back image file is missing (AAMMDD##bk.jpg).'
             ]));
         };
 

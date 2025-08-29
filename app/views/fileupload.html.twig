@@ -15,8 +15,12 @@
             <input type="file" id="file_json" name="jsonfile[]" accept=".json" multiple="multiple"/>
         </p>
         <p>
-            <label>Add file background image JPEG : </label><br/>
-            <input type="file" id="file_jpeg" name="jpegfile" accept=".jpg"/>
+            <label>Add file background image JPEG (FRONT) : </label><br/>
+            <input type="file" id="file_jpeg_fr" name="jpegfilefr" accept=".jpg"/>
+        </p>
+        <p>
+            <label>Add file background image JPEG (BACK) : </label><br/>
+            <input type="file" id="file_jpeg_bk" name="jpegfilevr" accept=".jpg"/>
         </p>
         <button id="enviar" name="send">Enviar</button>
         <p>
@@ -32,7 +36,10 @@
             <input type="text" name="tocart" id="to_cart">
         </p>
         <p>
-            <button id="gerar" name="create">Gerar PDF</button>
+            <button id="gerar1" name="create1">Gerar PDF FRENTE A5</button>
+        </p>
+        <p>
+            <button id="gerar2" name="create2">Gerar PDF FR/VR A4</button>
         </p>
     </form>
     <script src="app/assets/js/fileupload.js" type="module"></script>
