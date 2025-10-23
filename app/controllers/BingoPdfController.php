@@ -23,7 +23,7 @@ class BingoPdfController
         'fgcolor' => [0, 0, 0],
         'bgcolor' => false,
         'text' => true,
-        'font' => 'pdfacourierb',
+        'font' => 'dejavusansmono',
         'fontsize' => 12,
         'stretchtext' => 3
     ];
@@ -260,6 +260,138 @@ class BingoPdfController
             $pdf->lastPage();
             $pdfBinary = $pdf->render();
             $response->getBody()->write($pdfBinary);
+            return $response
+                ->withHeader('Content-Type', 'application/pdf')
+                ->withStatus(200);
+        }
+
+        $contents = $args;
+        $response->getBody()->write(
+            json_encode($contents, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+        );
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus(200);
+    }
+
+
+    public function createThreeSeriesOneCartTwoSideA4(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        $args = $request->getParsedBody();
+
+        $this->cartXoffSet = [0, 0, 94, 188];
+        $this->cartYoffSet = [0, 0, 0, 0];
+
+        if (!key_exists('error', $args)) {
+            // PDF CREATE
+
+            $bgFileFr = dirname(__FILE__, 3) . $_ENV['PATH_TO_UPLOAD'] . DIRECTORY_SEPARATOR . $args['serie'] . 'fr.jpg';
+            $bgFileBk = dirname(__FILE__, 3) . $_ENV['PATH_TO_UPLOAD'] . DIRECTORY_SEPARATOR . $args['serie'] . 'bk.jpg';
+            $jockerPng = dirname(__FILE__, 3) . '\\app\\assets\\img' . DIRECTORY_SEPARATOR . $_ENV['JOCKER_JPG'];
+            $jsonFile1 = dirname(__FILE__, 3) . $_ENV['PATH_TO_UPLOAD'] . DIRECTORY_SEPARATOR . $args['serie1'] . '.json';
+            $jsonFile2 = dirname(__FILE__, 3) . $_ENV['PATH_TO_UPLOAD'] . DIRECTORY_SEPARATOR . $args['serie2'] . '.json';
+            $jsonFile3 = dirname(__FILE__, 3) . $_ENV['PATH_TO_UPLOAD'] . DIRECTORY_SEPARATOR . $args['serie3'] . '.json';
+            $jsonData1 = json_decode(file_get_contents($jsonFile1), true);
+            $jsonData2 = json_decode(file_get_contents($jsonFile2), true);
+            $jsonData3 = json_decode(file_get_contents($jsonFile3), true);
+
+            $pdf = new BingoPdf('A4', 'L');
+
+            $pdf->setProtection(['copy', 'modify', 'extract', 'assemble'], $_ENV['PDF_PASS'], $_ENV['PDF_OWNER_PASS'], 0, null);
+
+            $pdf->setFilePDF($args['serie'] . '.pdf');
+
+            if ($args['from'] <= '0') {
+                $args['from'] = 1;
+            }
+            if ($args['to'] <= '0' or $args['to'] > count($jsonData1['carts'])) {
+                $args['to'] = count($jsonData1['carts']);
+            }
+
+            $page = 0;
+
+            for ($n = (int)$args['from'] - 1; $n < (int)$args['to']; $n++) {
+                // CARTELAS
+                $page++;
+                // NOVA PÁGINA (FRENTE)
+                $pdf->AddPage();
+
+                // BACKGROUND IMAGE (FRENTE)
+                $pdf->imageJpgPdf($bgFileFr, 0, 0, 297, 210);
+
+                // BARCODE CART NUMBER
+                $pdf->barCodePdf($args['serie'] . sprintf('%03d', $n + 1), 255, 192, 30, 10, 'I25+', 0.4, $this->barCodeStyle);
+
+                // NOVA PÁGINA (VERSO)
+                $pdf->AddPage();
+
+                // BACKGROUND IMAGE (FRENTE)
+                $pdf->imageJpgPdf($bgFileBk, 0, 0, 297, 210);
+
+                // BARCODE SERIE 1
+                $pdf->barCodePdf($args['serie1'] . sprintf('%03d', $n + 1), 16 + $this->cartXoffSet[1], 65, 30, 10, 'I25+', 0.4, $this->barCodeStyle);
+
+                // BARCODE SERIE 2
+                $pdf->barCodePdf($args['serie2'] . sprintf('%03d', $n + 1), 16 + $this->cartXoffSet[2], 65, 30, 10, 'I25+', 0.4, $this->barCodeStyle);
+
+                // BARCODE SERIE 3
+                $pdf->barCodePdf($args['serie3'] . sprintf('%03d', $n + 1), 16 + $this->cartXoffSet[3], 65, 30, 10, 'I25+', 0.4, $this->barCodeStyle);
+
+                // CABEÇALHO SERIE 1 (TEXTO HORIZONTAL)
+                $pdf->textBoxPdf($jsonData1['head']['title_serie'], 30 + $this->cartXoffSet[1], 76 + $this->cartYoffSet[1], 65, 11, ['style' => 'B', 'size' => 16]);
+                $pdf->textBoxPdf($jsonData1['head']['jackpot'], 30 + $this->cartXoffSet[1], 85 + $this->cartYoffSet[1], 65, 11, []);
+
+                // CABEÇALHO SERIE 2 (TEXTO HORIZONTAL)
+                $pdf->textBoxPdf($jsonData2['head']['title_serie'], 30 + $this->cartXoffSet[2], 76 + $this->cartYoffSet[2], 65, 11, ['style' => 'B', 'size' => 16]);
+                $pdf->textBoxPdf($jsonData2['head']['jackpot'], 30 + $this->cartXoffSet[2], 85 + $this->cartYoffSet[2], 65, 11, []);
+
+                // CABEÇALHO SERIE 3 (TEXTO HORIZONTAL)
+                $pdf->textBoxPdf($jsonData3['head']['title_serie'], 30 + $this->cartXoffSet[3], 76 + $this->cartYoffSet[3], 65, 11, ['style' => 'B', 'size' => 16]);
+                $pdf->textBoxPdf($jsonData3['head']['jackpot'], 30 + $this->cartXoffSet[3], 85 + $this->cartYoffSet[3], 65, 11, []);
+
+                for ($serieCart = 1; $serieCart <= 3; $serieCart++) {
+                    switch ($serieCart) {
+                        case 1:
+                            $jsonData = $jsonData1;
+                            break;
+                        case 2:
+                            $jsonData = $jsonData2;
+                            break;
+                        case 3:
+                            $jsonData = $jsonData3;
+                            break;
+                    }
+                    $cart = $jsonData['carts'][$n];
+
+                    // BALLS
+                    $balls = BingoCart::splitWord($cart);
+                    $i = 1;
+                    $argsTxt = [
+                        'font' => 'times',
+                        'style' => '',
+                        'size' => 30,
+                        'align' => 'C',
+                        'valign' => 'M'
+                    ];
+                    foreach ($balls as $ball) {
+                        if ($i !== 13) {
+                            $pdf->textBoxPdf($ball, 15 + 16 * ((int)(($i - 1) / 5)) + $this->cartXoffSet[$serieCart], (115 + 16 * ((int) (($i - 1) % 5))) + $this->cartYoffSet[$serieCart], 16, 16, $argsTxt);
+                        } else {
+                            // JOCKER
+                            $pdf->imagePngPdf($jockerPng, 16 + 16 * ((int)(($i - 1) / 5)) + $this->cartXoffSet[$serieCart], (115 + 16 * (($i - 1) % 5)) + $this->cartYoffSet[$serieCart], 14, 14);
+                        }
+                        $i++;
+                    }
+
+                    // HASH CART
+                    $pdf->textBoxPdf(BingoCart::getHashCart($cart), 17 + $this->cartXoffSet[$serieCart], 195 + $this->cartYoffSet[$serieCart], 75, 5, ['font' => 'dejavusansmono', 'style' => '', 'size' => 10]);
+                }
+            }
+            $pdf->lastPage();
+            $pdfBinary = $pdf->render();
+            $response->getBody()->write($pdfBinary);
+            // var_dump('PDF gerado com sucesso!');
+            // die;
             return $response
                 ->withHeader('Content-Type', 'application/pdf')
                 ->withStatus(200);

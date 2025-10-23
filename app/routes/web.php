@@ -11,6 +11,7 @@ use App\middlewares\CsvFileValidatorMiddleware;
 use App\middlewares\JsonBingoCartValidatorMiddleware;
 use App\middlewares\BingoFiles1SideValidatorMiddleware;
 use App\middlewares\BingoFiles2SideValidatorMiddleware;
+use App\middlewares\BingoFiles2Side3JsonValidatorMiddleware;
 use App\middlewares\JsonFileSignatureValidatorMiddleware;
 
 // API
@@ -33,6 +34,9 @@ $app->get('/api/bingo/pdf/generate/one_serie/two_carts/one_side/A5/{serie}/{from
 //->add(new OAuthMiddleware());
 $app->get('/api/bingo/pdf/generate/one_serie/two_carts/two_side/A4/{serie}/{from}/{to}', [BingoPdfController::class, 'createOneSerieTwoCartsTwoSideA4'])
     ->add(new BingoFiles2SideValidatorMiddleware());
+//->add(new OAuthMiddleware());
+$app->get('/api/bingo/pdf/generate/three_series/one_cart/two_side/A4/{serie}/{from}/{to}', [BingoPdfController::class, 'createThreeSeriesOneCartTwoSideA4'])
+    ->add(new BingoFiles2Side3JsonValidatorMiddleware());
 //->add(new OAuthMiddleware());
 
 // APP
